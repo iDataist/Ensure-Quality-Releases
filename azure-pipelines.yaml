@@ -1,118 +1,121 @@
+name: Azure Pipelines
 variables:
   InfraProvisioningResoureGroupName: group20210504
   tfBackendStorageAccountName: tfbackend20210504
   tfBackendStorageContainerName: tf-backend-files-20210504
   tfBackendFileName: tf-state-file-20210504
   tfvarsFile: dev.tfvars
-pool:
-  vmImage: 'ubuntu-latest'
-steps:
-#KEY VAULT TASK
-- task: AzureKeyVault@1
-  inputs:
-    azureSubscription: 'dev-sp'
-    KeyVaultName: "secrets-kv-20210504"
-    SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key'
-  displayName: 'Get key vault secrets as pipeline variables'
-# INSTALLING REQUIRED VERSION OF 
-# - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-#   displayName: 'Install Terraform 0.12.3'
-# AZURE CLI TASK
-- task: AzureCLI@1
-  inputs:
-    azureSubscription: 'dev-sp'
-    scriptLocation: 'inlineScript'
-    inlineScript: 'terraform version'
-  displayName: "Terraform Version"
-# AZ LOGIN USING TERRAFORM SERVICE PRINCIPAL
-- script: |
-    az login \
-    --service-principal \
-    -u $(sp-id) \
-    -p $(sp-secret) \
-    --tenant $(tenant-id)
-    cd $(System.DefaultWorkingDirectory)/terraform
-    echo '#######Terraform Init########'
-    terraform init \
-    -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
-    -backend-config="container_name=$(tfBackendStorageContainerName)" \
-    -backend-config="access_key=$(tf-backend-sa-access-key)" \
-    -backend-config="key=$(tfBackendFileName)"
-    echo '#######Terraform Plan########'
-    terraform plan -var-file=$(tfvarsFile) \
-    -var="client_id=$(sp-id)" \
-    -var="client_secret=$(sp-secret)" \
-    -var="tenant_id=$(tenant-id)" \
-    -var="subscription_id=$(subscription-id)" \
-    -out="out.plan"
-    echo '#######Terraform Apply########'
-    terraform apply out.plan
-  displayName: 'Terraform Init, Plan and Apply'
+  python.version: '3.7.6'
+stages:
+- stage: Build
+  jobs:
+  - job: ProvisionInfrastructure
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    #KEY VAULT TASK
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'dev-sp'
+        KeyVaultName: "secrets-kv-20210504"
+        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key'
+      displayName: 'Get key vault secrets as pipeline variables'
+    # AZURE CLI TASK
+    - task: AzureCLI@1
+      inputs:
+        azureSubscription: 'dev-sp'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'terraform version'
+      displayName: "Terraform Version"
+    # AZ LOGIN USING TERRAFORM SERVICE PRINCIPAL
+    - script: |
+        az login \
+        --service-principal \
+        -u $(sp-id) \
+        -p $(sp-secret) \
+        --tenant $(tenant-id)
+        cd $(System.DefaultWorkingDirectory)/terraform
+        echo '#######Terraform Init########'
+        terraform init \
+        -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
+        -backend-config="container_name=$(tfBackendStorageContainerName)" \
+        -backend-config="access_key=$(tf-backend-sa-access-key)" \
+        -backend-config="key=$(tfBackendFileName)"
+        echo '#######Terraform Plan########'
+        terraform plan -var-file=$(tfvarsFile) \
+        -var="client_id=$(sp-id)" \
+        -var="client_secret=$(sp-secret)" \
+        -var="tenant_id=$(tenant-id)" \
+        -var="subscription_id=$(subscription-id)" \
+        -out="out.plan"
+        echo '#######Terraform Apply########'
+        terraform apply out.plan
+      displayName: 'Terraform Init, Plan and Apply'
 
-# name: Azure Pipelines
-# variables:
-#   python.version: '3.7.6'
-# stages:
-# - stage: Build
-#   jobs:
-#   - job: Build
-#     pool:
-#       name: Hosted Ubuntu 1604
-#     steps:
-    # Needed for Terraform VM deployment
-    # - task: InstallSSHKey@0
-    #   inputs:
-    #     knownHostsEntry: 'KNOWN_HOSTS_STRING'
-    #     sshPublicKey: 'PUBLIC_KEY'
-    #     sshKeySecureFile: 'id_rsa'
-#     - task: ArchiveFiles@2
-#       displayName: 'Archive FakeRestAPI'
-#       inputs:
-#         rootFolderOrFile: 'path/to/fakerestapi'
-#         includeRootFolder: false
-#         archiveType: 'zip'
-#         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
-#     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-#       displayName: 'Upload Package'
-#       artifact: drop-fakerestapi
-# - stage:
-#   jobs:
-#   - deployment: FakeRestAPI
-#     pool:
-#       vmImage: 'Ubuntu-16.04'
-#     environment: 'TEST'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: AzureWebApp@1
-#             displayName: 'Deploy Azure Web App'
-#             inputs:
-#               azureSubscription: ''
-#               appName: ''
-#               appType: webApp
-#               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-  # - deployment: VMDeploy
-  #   displayName: NAME
-  #   environment:
-  #     name:  ENVIRONMENT NAME
-  #     resourceType: VirtualMachine
-  #     tags: TAG NAME
-  #   strategy:
-  #     runOnce:
-  #       deploy:
-  #         steps:
-  #         - task: Bash@3
-  #           inputs:
-  #             targetType: 'inline'
-  #             script: |
-  #               #! /bin/bash
+name: Azure Pipelines
+variables:
+  python.version: '3.7.6'
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      name: Hosted Ubuntu 1604
+    steps:
+    Needed for Terraform VM deployment
+    - task: InstallSSHKey@0
+      inputs:
+        knownHostsEntry: 'KNOWN_HOSTS_STRING'
+        sshPublicKey: 'PUBLIC_KEY'
+        sshKeySecureFile: 'id_rsa'
+    - task: ArchiveFiles@2
+      displayName: 'Archive FakeRestAPI'
+      inputs:
+        rootFolderOrFile: 'path/to/fakerestapi'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+      displayName: 'Upload Package'
+      artifact: drop-fakerestapi
+- stage:
+  jobs:
+  - deployment: FakeRestAPI
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    environment: 'TEST'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App'
+            inputs:
+              azureSubscription: ''
+              appName: ''
+              appType: webApp
+              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+  - deployment: VMDeploy
+    displayName: NAME
+    environment:
+      name:  ENVIRONMENT NAME
+      resourceType: VirtualMachine
+      tags: TAG NAME
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                #! /bin/bash
                 
-  #               sudo apt-get upgrade -y
-  #               sudo apt-get install python3-pip -y
-  #               sudo apt-get install unzip -y
-  #               sudo apt-get install -y chromium-browser
-  #               pip3 install selenium
-  #               export PATH=$PATH:some/path
+                sudo apt-get upgrade -y
+                sudo apt-get install python3-pip -y
+                sudo apt-get install unzip -y
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+                export PATH=$PATH:some/path
 
 

@@ -5,38 +5,38 @@ storageaccount="tfbackend$uniqueid"
 container="tf-backend-files-$uniqueid"
 keyvault="secrets-kv-$uniqueid"
 
-# # Create the resource group
-# az group create \
-# -n $resourcegroup \
-# -l $location
+# Create the resource group
+az group create \
+-n $resourcegroup \
+-l $location
 
-# # Create the key vault
-# az keyvault create \
-# -n $keyvault \
-# -g $resourcegroup \
-# -l $location
+# Create the key vault
+az keyvault create \
+-n $keyvault \
+-g $resourcegroup \
+-l $location
 
-# # Create storage account
-# az storage account create \
-# --resource-group $resourcegroup \
-# --name $storageaccount \
-# --sku Standard_LRS \
-# --encryption-services blob
+# Create storage account
+az storage account create \
+--resource-group $resourcegroup \
+--name $storageaccount \
+--sku Standard_LRS \
+--encryption-services blob
 
-# # Get storage account key
-# ACCOUNT_KEY=$(az storage account keys list --resource-group $resourcegroup --account-name $storageaccount --query [0].value -o tsv)
+# Get storage account key
+ACCOUNT_KEY=$(az storage account keys list --resource-group $resourcegroup --account-name $storageaccount --query [0].value -o tsv)
 
-# # Create container
-# az storage container create \
-# --name $container \
-# --account-name $storageaccount \
-# --account-key $ACCOUNT_KEY
+# Create container
+az storage container create \
+--name $container \
+--account-name $storageaccount \
+--account-key $ACCOUNT_KEY
 
-# # Add the storage account key as a secret in the key vault
-# az keyvault secret set \
-# --vault-name $keyvault \
-# --name "tf-backend-sa-access-key" \
-# --value "$ACCOUNT_KEY"
+# Add the storage account key as a secret in the key vault
+az keyvault secret set \
+--vault-name $keyvault \
+--name "tf-backend-sa-access-key" \
+--value "$ACCOUNT_KEY"
 
 # Create terraform service principal
 SP=$(az ad sp create-for-rbac)
