@@ -23,14 +23,58 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: echo "provisioned infrastructure"
+    #KEY VAULT TASK
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'dev-sp'
+        KeyVaultName: "secrets-kv-20210504"
+        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key'
+      displayName: 'Get key vault secrets as pipeline variables'
+    # AZURE CLI TASK
+    - task: AzureCLI@1
+      inputs:
+        azureSubscription: 'dev-sp'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'terraform version'
+      displayName: "Terraform Version"
+    # AZ LOGIN USING TERRAFORM SERVICE PRINCIPAL
+    - script: |
+        az login \
+        --service-principal \
+        -u $(sp-id) \
+        -p $(sp-secret) \
+        --tenant $(tenant-id)
+        cd $(System.DefaultWorkingDirectory)/terraform
+        echo '#######Terraform Init########'
+        terraform init \
+        -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
+        -backend-config="container_name=$(tfBackendStorageContainerName)" \
+        -backend-config="access_key=$(tf-backend-sa-access-key)" \
+        -backend-config="key=$(tfBackendFileName)"
+        echo '#######Terraform Plan########'
+        terraform plan -var-file=$(tfvarsFile) \
+        -var="client_id=$(sp-id)" \
+        -var="client_secret=$(sp-secret)" \
+        -var="tenant_id=$(tenant-id)" \
+        -var="subscription_id=$(subscription-id)" \
+        -out="out.plan"
+        echo '#######Terraform Apply########'
+        terraform apply out.plan
       displayName: 'Terraform Init, Plan and Apply'
   - job: UploadPackage
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: echo "uploaded package"
-      displayName: 'Terraform Init, Plan and Apply'
+    - task: ArchiveFiles@2
+      displayName: 'Archive Package'
+      inputs:
+        rootFolderOrFile: 'package'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-package.zip'
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-package.zip
+      displayName: 'Upload Package'
+      artifact: drop-package
 - stage: Deploy
   jobs:
   - deployment: DeployPackage
