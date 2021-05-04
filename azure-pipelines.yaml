@@ -41,14 +41,12 @@ steps:
     -p $(sp-secret) \
     --tenant $(tenant-id)
     cd $(System.DefaultWorkingDirectory)/terraform
-# TERRAFORM INIT
     echo '#######Terraform Init########'
     terraform init \
     -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
     -backend-config="container_name=$(tfBackendStorageContainerName)" \
     -backend-config="access_key=$(tf-backend-sa-access-key)" \
     -backend-config="key=$(tfBackendFileName)"
-# TERRAFORM PLAN    
     echo '#######Terraform Plan########'
     terraform plan -var-file=$(tfvarsFile) \
     -var="client_id=$(sp-id)" \
@@ -56,10 +54,10 @@ steps:
     -var="tenant_id=$(tenant-id)" \
     -var="subscription_id=$(subscription-id)" \
     -out="out.plan"
-# TERRAFORM APPLY    
     echo '#######Terraform Apply########'
     terraform apply out.plan
-  displayName: 'Terraform Init, Plan and Apply '
+  displayName: 'Terraform Init, Plan and Apply'
+
 # name: Azure Pipelines
 # variables:
 #   python.version: '3.7.6'
