@@ -8,7 +8,7 @@ trigger:
     - .gitignore
     - screenshots/
 
-name: Deploy Webapp
+name: DevOps Pipeline
 variables:
   InfraProvisioningResoureGroupName: group20210504
   tfBackendStorageAccountName: tfbackend20210504
@@ -29,54 +29,46 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: ArchiveFiles@2
-      displayName: 'Archive Package'
-      inputs:
-        rootFolderOrFile: 'package'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-package.zip'
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-package.zip
-      displayName: 'Upload Package'
-      artifact: drop-package
-# - stage: Deploy
-#   jobs:
-#   - deployment: FakeRestAPI
-#     pool:
-#       vmImage: 'Ubuntu-16.04'
-#     environment: 'TEST'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: AzureWebApp@1
-#             displayName: 'Deploy Azure Web App'
-#             inputs:
-#               azureSubscription: 'dev-sp'
-#               appName: ''
-#               appType: webApp
-#               package: $(Pipeline.Workspace)/drop-package/$(Build.BuildId)-package.zip
-#   - deployment: VMDeploy
-#     displayName: NAME
-#     environment:
-#       name:  ENVIRONMENT NAME
-#       resourceType: VirtualMachine
-#       tags: TAG NAME
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: Bash@3
-#             inputs:
-#               targetType: 'inline'
-#               script: |
-#                 #! /bin/bash
+    - script: echo "uploaded package"
+      displayName: 'Terraform Init, Plan and Apply'
+- stage: Deploy
+  jobs:
+  - deployment: DeployPackage
+    displayName: Deploy Package
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'APP'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App'
+            inputs:
+              azureSubscription: 'dev-sp'
+              appName: 'webapp20210504-AppService'
+              appType: webApp
+              package: $(Pipeline.Workspace)/drop-package/$(Build.BuildId)-package.zip
+  - deployment: DeployVM
+    displayName: Deploy VM
+    environment:
+      name: 'VM'
+      resourceType: VirtualMachine
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                #! /bin/bash
                 
-#                 sudo apt-get upgrade -y
-#                 sudo apt-get install python3-pip -y
-#                 sudo apt-get install unzip -y
-#                 sudo apt-get install -y chromium-browser
-#                 pip3 install selenium
-#                 export PATH=$PATH:some/path
+                sudo apt-get upgrade -y
+                sudo apt-get install python3-pip -y
+                sudo apt-get install unzip -y
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+                export PATH=$PATH:some/path
 
 
