@@ -8,5 +8,5 @@ variable "public_ip_address_id" {}
 variable "subnet_id" {}
 
 # VM
-variable admin_username {}
-variable admin_password {}
+variable "admin_username" {}
+variable "admin_password" {}
