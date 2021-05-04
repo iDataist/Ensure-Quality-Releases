@@ -5,15 +5,9 @@ provider "azurerm" {
   client_secret   = "${var.client_secret}"
   features {}
 }
-
 terraform {
   backend "azurerm" {
   }
-}
-module "resource_group" {
-  source               = "./modules/resource_group"
-  resource_group       = "${var.resource_group}"
-  location             = "${var.location}"
 }
 module "network" {
   source               = "./modules/network"
@@ -25,7 +19,6 @@ module "network" {
   resource_group       = "${module.resource_group.resource_group_name}"
   address_prefix_test  = "${var.address_prefix_test}"
 }
-
 module "nsg-test" {
   source           = "./modules/networksecuritygroup"
   location         = "${var.location}"
