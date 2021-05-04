@@ -28,7 +28,7 @@ stages:
       inputs:
         azureSubscription: 'dev-sp'
         KeyVaultName: "secrets-kv-20210504"
-        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key'
+        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password', 
       displayName: 'Get key vault secrets as pipeline variables'
     # AZURE CLI TASK
     - task: AzureCLI@1
@@ -57,6 +57,8 @@ stages:
         -var="client_secret=$(sp-secret)" \
         -var="tenant_id=$(tenant-id)" \
         -var="subscription_id=$(subscription-id)" \
+        -var="admin_username=$(vm-user)" \
+        -var="admin_password=$(vm-password)" \
         -out="out.plan"
         echo '#######Terraform Apply########'
         terraform apply out.plan
