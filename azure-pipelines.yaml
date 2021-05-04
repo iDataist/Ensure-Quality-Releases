@@ -19,7 +19,7 @@ steps:
 #KEY VAULT TASK
 - task: AzureKeyVault@1
   inputs:
-    azureSubscription: '$(environment)-sp'
+    azureSubscription: 'dev-sp'
     KeyVaultName: "secrets-kv-20210504"
     SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key'
   displayName: 'Get key vault secrets as pipeline variables'
