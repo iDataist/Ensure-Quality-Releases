@@ -38,14 +38,13 @@ module "publicip" {
   source           = "./modules/publicip"
   location         = "${var.location}"
   application_type = "${var.application_type}"
-  resource_type    = "publicip"
+  resource_type    = "PublicIp"
   resource_group   = "${var.resource_group}"
 }
 module "vm" {
   source               = "./modules/vm"
   location             = "${var.location}"
   application_type     = "${var.application_type}"
-  resource_type        = "VM"
   resource_group       = "${var.resource_group}"
   public_ip_address_id = "${module.publicip.public_ip_address_id}"
   subnet_id            = "${module.network.subnet_id}"
