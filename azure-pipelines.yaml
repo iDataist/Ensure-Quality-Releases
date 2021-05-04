@@ -28,7 +28,7 @@ stages:
       inputs:
         azureSubscription: 'dev-sp'
         KeyVaultName: "secrets-kv-20210504"
-        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password', 
+        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password'
       displayName: 'Get key vault secrets as pipeline variables'
     # AZURE CLI TASK
     - task: AzureCLI@1
