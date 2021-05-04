@@ -3,19 +3,10 @@ variables:
   tfBackendStorageAccountName: tfbackend20210504
   tfBackendStorageContainerName: tf-backend-files-20210504
   tfBackendFileName: tf-state-file-20210504
-  tfvarsFile: $(environment).tfvars
+  tfvarsFile: dev.tfvars
 pool:
   vmImage: 'ubuntu-latest'
 steps:
-#PARAMETER VALIDATION
-- script: |
-    set +e
-    if [ -z $(environment) ]; then
-    echo "target environment not specified";
-    exit 1;
-    fi
-    echo "environment is:" $(environment)
-  displayName: 'Verify that the environment parameter has been supplied to pipeline'
 #KEY VAULT TASK
 - task: AzureKeyVault@1
   inputs:
