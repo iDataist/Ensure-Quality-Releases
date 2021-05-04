@@ -15,7 +15,7 @@ steps:
     exit 1;
     fi
     echo "environment is:" $(environment)
-displayName: 'Verify that the environment parameter has been supplied to pipeline'
+  displayName: 'Verify that the environment parameter has been supplied to pipeline'
 #KEY VAULT TASK
 - task: AzureKeyVault@1
   inputs:
