@@ -41,7 +41,7 @@ steps:
     -p $(sp-secret) \
     --tenant $(tenant-id)
     cd $(System.DefaultWorkingDirectory)/terraform
-# TERRAFORM INIT    
+# TERRAFORM INIT
     echo '#######Terraform Init########'
     terraform init \
     -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
@@ -59,7 +59,6 @@ steps:
 # TERRAFORM APPLY    
     echo '#######Terraform Apply########'
     terraform apply out.plan
-    
   displayName: 'Terraform Init, Plan and Apply '
 # name: Azure Pipelines
 # variables:
