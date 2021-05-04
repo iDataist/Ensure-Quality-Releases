@@ -29,7 +29,7 @@ steps:
 # AZURE CLI TASK
 - task: AzureCLI@1
   inputs:
-    azureSubscription: '$(environment)-sp'
+    azureSubscription: 'dev-sp'
     scriptLocation: 'inlineScript'
     inlineScript: 'terraform version'
   displayName: "Terraform Version"
