@@ -1,6 +1,6 @@
 trigger:
   branches:
-    include:
+    exclude:
     - main
   paths:
     exclude:
@@ -23,22 +23,67 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: echo "provisioned infrastructure"
-    displayName: 'Terraform Init, Plan and Apply'
-  - job: UploadPackage
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'dev-sp'
+        KeyVaultName: "secrets-kv-20210504"
+        SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password'
+      displayName: 'Get key vault secrets as pipeline variables'
+    - task: AzureCLI@1
+      inputs:
+        azureSubscription: 'dev-sp'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'terraform version'
+      displayName: "Terraform Version"
+    - script: |
+        az login \
+        --service-principal \
+        -u $(sp-id) \
+        -p $(sp-secret) \
+        --tenant $(tenant-id)
+        cd $(System.DefaultWorkingDirectory)/terraform
+        echo '#######Terraform Init########'
+        terraform init \
+        -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
+        -backend-config="container_name=$(tfBackendStorageContainerName)" \
+        -backend-config="access_key=$(tf-backend-sa-access-key)" \
+        -backend-config="key=$(tfBackendFileName)"
+        echo '#######Terraform Plan########'
+        terraform plan -var-file=$(tfvarsFile) \
+        -var="client_id=$(sp-id)" \
+        -var="client_secret=$(sp-secret)" \
+        -var="tenant_id=$(tenant-id)" \
+        -var="subscription_id=$(subscription-id)" \
+        -var="admin_username=$(vm-user)" \
+        -var="admin_password=$(vm-password)" \
+        -out="out.plan"
+        echo '#######Terraform Apply########'
+        terraform apply out.plan
+      displayName: 'Terraform Init, Plan and Apply'
+  - job: StageArtifacts
     pool:
       vmImage: 'ubuntu-latest'
     steps:
     - task: ArchiveFiles@2
-      displayName: 'Archive Package'
+      displayName: 'Archive API'
       inputs:
-        rootFolderOrFile: 'package'
+        rootFolderOrFile: 'api'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-package.zip'
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-package.zip
-      displayName: 'Upload Package'
-      artifact: drop-package
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-api.zip'
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-api.zip
+      displayName: 'Stage API'
+      artifact: drop-api
+    - task: ArchiveFiles@2
+      displayName: 'Archive Selenium'
+      inputs:
+        rootFolderOrFile: 'automatedtesting/selenium'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium.zip'
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium.zip
+      displayName: 'Stage Selenium'
+      artifact: drop-selenium
 - stage: Deploy
   jobs:
   - deployment: DeployPackage
@@ -56,7 +101,7 @@ stages:
               azureSubscription: 'dev-sp'
               appName: 'webapp20210504-AppService'
               appType: webApp
-              package: $(Pipeline.Workspace)/drop-package/$(Build.BuildId)-package.zip
+              package: $(Pipeline.Workspace)/drop-api/$(Build.BuildId)-api.zip
   - deployment: DeployVM
     displayName: Deploy VM
     environment:
@@ -66,17 +111,69 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: |
-                #! /bin/bash
-                
+          - script: |
                 sudo apt-get upgrade -y
                 sudo apt-get install python3-pip -y
                 sudo apt-get install unzip -y
                 sudo apt-get install -y chromium-browser
+                sudo apt-get install -y chromium-chromedriver
                 pip3 install selenium
-                export PATH=$PATH:some/path
-
-
+- stage: Test
+  jobs:
+    - job: IntegrationTest
+      steps:
+      - task: NodeTool@0
+        displayName: Install Node v12.X
+        inputs:
+          versionSpec: '12.x'
+      - script: |
+          echo '#######Install Newman########'
+          npm install newman
+          echo '#######Run Regression Tests########'
+          newman run automatedtesting/postman/regression_tests.postman_collection.json \
+          -e automatedtesting/postman/regression_tests.postman_environment.json \
+          --reporter-junit-export report/regression_tests_report.xml
+          echo '#######Run Validation Tests########'
+          newman run automatedtesting/postman/validation_tests.postman_collection.json \
+          -e automatedtesting/postman/validation_tests.postman_environment.json \
+          --reporter-junit-export report/validation_tests_report.xml
+        displayName: Run Regression and Validation Tests
+      - task: PublishTestResults@2
+        displayName: Publish Regression and Validation Test Reports
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
+    - deployment: UITest
+      environment:
+        name:  'VM'
+        resourceType: VirtualMachine
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - script: |
+                unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
+                sudo mkdir logs
+                python3 selenium/ui_tests.py > logs/ui_test_logs.log
+              displayName: Run UI Tests
+    - job: PerformanceTest
+      steps: 
+        - task: JMeterInstaller@0
+          displayName: Install JMeter 5.4.1
+          inputs:
+            jmeterVersion: '5.4.1'
+        - script: |
+            jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
+            -Jresdir=automatedtesting/jmeter/endurance_pages.csv \
+            -l automatedtesting/jmeter/report/enduranceresults.jtl \
+            -e -o automatedtesting/jmeter/endurance_test_report
+            jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
+            -Jresdir=automatedtesting/jmeter/stress_pages.csv \
+            -l automatedtesting/jmeter/report/stressresults.jtl \
+            -e -o automatedtesting/jmeter/stress_test_report
+          displayName: Run Endurance and Stress Tests
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: 'automatedtesting/jmeter'
+            ArtifactName: 'jmeter'
+            publishLocation: 'Container'
