@@ -79,7 +79,7 @@ az devops service-endpoint azurerm create \
 --azure-rm-tenant-id $TENANT_ID \
 --name $sp \
 --organization "https://dev.azure.com/hwdgrmy/" \
---project "Deploy-VM"
+--project "Ensuring Quality Releases"
 
 # Set the VM username and password and save them to keyvault
 az keyvault secret set --vault-name $keyvault --name "vm-user" --value "vmadmin$uniqueid"
@@ -95,4 +95,5 @@ az deployment group create \
 # ssh [ADMIN]@[PUBLIC-IP]
 # sudo adduser [USERNAME] sudo
 # wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w <YOUR WORKSPACE ID> -s <YOUR WORKSPACE PRIMARY KEY>
+
 
