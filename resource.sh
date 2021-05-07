@@ -1,4 +1,4 @@
-uniqueid=20210504
+uniqueid=20210507
 resourcegroup="group$uniqueid"
 location='westus2'
 storageaccount="tfbackend$uniqueid" 
@@ -44,6 +44,7 @@ SP=$(az ad sp create-for-rbac)
 CLIENT_ID=$(echo $SP | jq '.appId' | sed 's/"//g')
 # Client secret of the service principal
 CLIENT_SECRET=$(echo $SP | jq '.password' | sed 's/"//g')
+echo $CLIENT_SECRET
 # Set your tenant ID
 TENANT_ID=$(echo $SP | jq '.tenant' | sed 's/"//g')
 # Set your subscription ID
@@ -85,7 +86,7 @@ az keyvault secret set --vault-name $keyvault --name "vm-password" --value "p@ss
 
 # Set up log analytics workspace
 az deployment group create \
---resource-group group20210504 \
+--resource-group $resourcegroup \
 --name deploy-group \
 --template-file deploymentTemplate.json
 
