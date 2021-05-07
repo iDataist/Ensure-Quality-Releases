@@ -156,24 +156,3 @@ stages:
                 sudo mkdir logs
                 python3 selenium/ui_tests.py > logs/ui_test_logs.log
               displayName: Run UI Tests
-    - job: PerformanceTest
-      steps: 
-        - task: JMeterInstaller@0
-          displayName: Install JMeter 5.4.1
-          inputs:
-            jmeterVersion: '5.4.1'
-        - script: |
-            jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
-            -Jresdir=automatedtesting/jmeter/endurance_pages.csv \
-            -l automatedtesting/jmeter/report/enduranceresults.jtl \
-            -e -o automatedtesting/jmeter/endurance_test_report
-            jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
-            -Jresdir=automatedtesting/jmeter/stress_pages.csv \
-            -l automatedtesting/jmeter/report/stressresults.jtl \
-            -e -o automatedtesting/jmeter/stress_test_report
-          displayName: Run Endurance and Stress Tests
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: 'automatedtesting/jmeter'
-            ArtifactName: 'jmeter'
-            publishLocation: 'Container'
