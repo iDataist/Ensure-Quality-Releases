@@ -79,7 +79,7 @@ az devops service-endpoint azurerm create \
 --azure-rm-tenant-id $TENANT_ID \
 --name $sp \
 --organization "https://dev.azure.com/hwdgrmy/" \
---project "Ensuring Quality Releases"
+--project "Deploy-Tests"
 
 # Set the VM username and password and save them to keyvault
 az keyvault secret set --vault-name $keyvault --name "vm-user" --value "vmadmin$uniqueid"
