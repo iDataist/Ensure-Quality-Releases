@@ -1,7 +1,7 @@
 # Resource Group/Location
 location = "westus2"
-resource_group = "group20210504"
-application_type = "webapp20210504"
+resource_group = "group20210506"
+application_type = "webapp20210506"
 
 # Network
 address_space = ["10.5.0.0/16"]
