@@ -10,10 +10,10 @@ trigger:
 
 name: DevOps Pipeline
 variables:
-  InfraProvisioningResoureGroupName: group20210506
-  tfBackendStorageAccountName: tfbackend20210506
-  tfBackendStorageContainerName: tf-backend-files-20210506
-  tfBackendFileName: tf-state-file-20210506
+  InfraProvisioningResoureGroupName: group20210508
+  tfBackendStorageAccountName: tfbackend20210508
+  tfBackendStorageContainerName: tf-backend-files-20210508
+  tfBackendFileName: tf-state-file-20210508
   tfvarsFile: dev.tfvars
   python.version: '3.7.6'
 stages:
@@ -25,13 +25,13 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'sp-20210506'
-        KeyVaultName: "secrets-kv-20210506"
+        azureSubscription: 'sp-20210508'
+        KeyVaultName: "secrets-kv-20210508"
         SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password'
       displayName: 'Get key vault secrets as pipeline variables'
     - task: AzureCLI@1
       inputs:
-        azureSubscription: 'sp-20210506'
+        azureSubscription: 'sp-20210508'
         scriptLocation: 'inlineScript'
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
@@ -98,14 +98,14 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: 'sp-20210506'
-              appName: 'webapp20210506-AppService'
+              azureSubscription: 'sp-20210508'
+              appName: 'webapp20210508-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-api/$(Build.BuildId)-api.zip
   - deployment: DeployVM
     displayName: Deploy VM
     environment:
-      name: 'VM20210506'
+      name: 'VM20210508'
       resourceType: VirtualMachine
     strategy:
       runOnce:
@@ -145,7 +145,7 @@ stages:
           testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
     - deployment: UITest
       environment:
-        name:  'VM20210506'
+        name:  'VM20210508'
         resourceType: VirtualMachine
       strategy:
         runOnce:
