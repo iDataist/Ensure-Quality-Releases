@@ -1,9 +1,10 @@
-uniqueid=20210507
+uniqueid=20210506
 resourcegroup="group$uniqueid"
 location='westus2'
 storageaccount="tfbackend$uniqueid" 
 container="tf-backend-files-$uniqueid"
 keyvault="secrets-kv-$uniqueid"
+sp="sp-$uniqueid"
 
 # Create the resource group
 az group create \
@@ -76,7 +77,7 @@ az devops service-endpoint azurerm create \
 --azure-rm-subscription-id $SUBSCRIPTION \
 --azure-rm-subscription-name $SUBSCRIPTION_NAME \
 --azure-rm-tenant-id $TENANT_ID \
---name dev-sp \
+--name $sp \
 --organization "https://dev.azure.com/hwdgrmy/" \
 --project "Deploy-VM"
 
