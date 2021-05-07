@@ -10,10 +10,10 @@ trigger:
 
 name: DevOps Pipeline
 variables:
-  InfraProvisioningResoureGroupName: group20210507
-  tfBackendStorageAccountName: tfbackend20210507
-  tfBackendStorageContainerName: tf-backend-files-20210507
-  tfBackendFileName: tf-state-file-20210507
+  InfraProvisioningResoureGroupName: group20210506
+  tfBackendStorageAccountName: tfbackend20210506
+  tfBackendStorageContainerName: tf-backend-files-20210506
+  tfBackendFileName: tf-state-file-20210506
   tfvarsFile: dev.tfvars
   python.version: '3.7.6'
 stages:
@@ -25,13 +25,13 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'dev-sp'
-        KeyVaultName: "secrets-kv-20210507"
+        azureSubscription: 'sp-20210506'
+        KeyVaultName: "secrets-kv-20210506"
         SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password'
       displayName: 'Get key vault secrets as pipeline variables'
     - task: AzureCLI@1
       inputs:
-        azureSubscription: 'dev-sp'
+        azureSubscription: 'sp-20210506'
         scriptLocation: 'inlineScript'
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
@@ -98,8 +98,8 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: 'dev-sp'
-              appName: 'webapp20210507-AppService'
+              azureSubscription: 'sp-20210506'
+              appName: 'webapp20210506-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-api/$(Build.BuildId)-api.zip
   - deployment: DeployVM
