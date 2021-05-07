@@ -105,7 +105,7 @@ stages:
   - deployment: DeployVM
     displayName: Deploy VM
     environment:
-      name: 'VM'
+      name: 'VM20210506'
       resourceType: VirtualMachine
     strategy:
       runOnce:
@@ -145,7 +145,7 @@ stages:
           testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
     - deployment: UITest
       environment:
-        name:  'VM'
+        name:  'VM20210506'
         resourceType: VirtualMachine
       strategy:
         runOnce:
