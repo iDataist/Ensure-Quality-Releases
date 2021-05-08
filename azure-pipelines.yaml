@@ -132,24 +132,34 @@ stages:
           echo '#####################Install Newman#####################'
           npm install newman
           sudo npm install -g newman-reporter-junitfull
-          sudo mkdir report
+          mkdir -p log
+          pwd
+          ls -la
           echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
           --reporters cli,junit \
-          --reporter-junit-export regression_tests_report.xml
+          --reporter-junit-export regression_tests_report.xml \
+          --suppress-exit-code
           sleep 120s
           echo '#####################Run Validation Tests#####################'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
           --reporters cli,junit \
-          --reporter-junit-export validation_tests_report.xml
+          --reporter-junit-export validation_tests_report.xml \
+          --suppress-exit-code
+          ls -la $(System.DefaultWorkingDirectory)/log/
         displayName: Run Regression and Validation Tests
       - task: PublishPipelineArtifact@1
-        displayName: Publish Regression and Validation Test Reports
+        displayName: Publish Regression and Validation Test Reports as Artifacts
         inputs:
-          targetPath: '$(System.DefaultWorkingDirectory)/*.xml'
+          targetPath: '$(System.DefaultWorkingDirectory)/log'
           artifactName: 'drop-integration-test'
+      - task: PublishTestResults@2
+        displayName: Publish Regression and Validation Test Reports as Test Results
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/log/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
