@@ -36,6 +36,9 @@ stages:
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
     - script: |
+        echo $(System.DefaultWorkingDirectory)
+        echo $(Build.ArtifactStagingDirectory)
+        echo $(Pipeline.Workspace)
         az login \
         --service-principal \
         -u $(sp-id) \
