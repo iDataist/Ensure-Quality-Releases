@@ -36,15 +36,14 @@ stages:
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
     - script: |
-        echo $(System.DefaultWorkingDirectory)
-        echo $(Build.ArtifactStagingDirectory)
-        echo $(Pipeline.Workspace)
+        pwd
+        ls -d $(Pipeline.Workspace)
         az login \
         --service-principal \
         -u $(sp-id) \
         -p $(sp-secret) \
         --tenant $(tenant-id)
-        cd $(System.DefaultWorkingDirectory)/terraform
+        cd $(Pipeline.Workspace)/terraform
         echo '#######Terraform Init########'
         terraform init \
         -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
@@ -145,7 +144,7 @@ stages:
         displayName: Publish Regression and Validation Test Reports
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
+          testResultsFiles: '$(Pipeline.Workspace)/integration_test_reports/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
