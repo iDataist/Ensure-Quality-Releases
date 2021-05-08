@@ -57,5 +57,5 @@ if __name__ == "__main__":
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
     test_login(driver, 'standard_user', 'secret_sauce')
-    test_add_to_cart(driver, 3) 
-    test_remove(driver, 2)
+    test_add_to_cart(driver, 6) 
+    test_remove(driver, 6)
