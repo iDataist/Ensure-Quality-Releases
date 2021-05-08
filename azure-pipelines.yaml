@@ -133,8 +133,6 @@ stages:
           npm install newman
           sudo npm install -g newman-reporter-junitfull
           mkdir -p log/newman
-          pwd
-          ls
           echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
@@ -146,18 +144,12 @@ stages:
           -e automatedtesting/postman/validation_tests.postman_environment.json \
           --reporters cli,junit \
           --reporter-junit-export log/newman/validation_tests_report.xml \
-          ls $(System.DefaultWorkingDirectory)/log/newman
         displayName: Run Regression and Validation Tests
       - task: PublishPipelineArtifact@1
         displayName: Publish Regression and Validation Test Reports as Artifacts
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)/log/newman'
           artifactName: 'drop-integration-test'
-      - task: PublishTestResults@2
-        displayName: Publish Regression and Validation Test Reports as Test Results
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/log/newman/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
@@ -183,16 +175,14 @@ stages:
           jmeterVersion: '5.4.1'
       - script: |
           mkdir -p log/jmeter
-          pwd
-          ls
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
-          -Jresdir=automatedtesting/jmeter/endurance_test_result.csv \
+          -l log/jmeter/endurance_test_result.csv \
           -e -f -o log/jmeter/endurance_test_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
-          -Jresdir=automatedtesting/jmeter/stress_test_result.csv \
+          -l log/jmeter/stress_test_result.csv \
           -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
           ls $(System.DefaultWorkingDirectory)/log/jmeter
