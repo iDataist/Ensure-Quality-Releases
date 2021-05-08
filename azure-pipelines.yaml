@@ -137,18 +137,18 @@ stages:
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
           --reporters cli,junit \
-          --reporter-junit-export report/regression_tests_report.xml
+          --reporter-junit-export regression_tests_report.xml
           echo '#####################Run Validation Tests#####################'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
           --reporters cli,junit \
-          --reporter-junit-export report/validation_tests_report.xml
+          --reporter-junit-export validation_tests_report.xml
         displayName: Run Regression and Validation Tests
       - task: PublishTestResults@2
         displayName: Publish Regression and Validation Test Reports
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
