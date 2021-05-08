@@ -120,6 +120,11 @@ stages:
               sudo apt-get install -y chromium-browser
               sudo apt-get install -y chromium-chromedriver
               pip3 install selenium
+              python3 -V
+              pip3 -V
+              /usr/bin/chromium-browser --version
+              /usr/bin/chromedriver --version
+              python3 -c "import selenium; print('Selenium Version:', selenium.__version__)"
 - stage: Test
   jobs:
     - job: IntegrationTest
@@ -144,7 +149,7 @@ stages:
         displayName: Publish Regression and Validation Test Reports
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
@@ -155,6 +160,6 @@ stages:
             steps:
             - script: |
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                sudo mkdir logs
-                python3 selenium/ui_tests.py > logs/ui_test_logs.log
+                python3 selenium/ui_tests.py > ui_test_logs.log
+                pwd
               displayName: Run UI Tests
