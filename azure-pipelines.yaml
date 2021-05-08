@@ -139,15 +139,13 @@ stages:
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
           --reporters cli,junit \
-          --reporter-junit-export regression_tests_report.xml \
-          --suppress-exit-code
+          --reporter-junit-export log/regression_tests_report.xml \
           sleep 120s
           echo '#####################Run Validation Tests#####################'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
           --reporters cli,junit \
-          --reporter-junit-export validation_tests_report.xml \
-          --suppress-exit-code
+          --reporter-junit-export log/validation_tests_report.xml \
           ls -la $(System.DefaultWorkingDirectory)/log/
         displayName: Run Regression and Validation Tests
       - task: PublishPipelineArtifact@1
@@ -158,10 +156,8 @@ stages:
       - task: PublishTestResults@2
         displayName: Publish Regression and Validation Test Reports as Test Results
         inputs:
-          testRunner: 'JUnit'
-          searchFolder: '$(System.DefaultWorkingDirectory)/log'
-          testResultsFiles: '*.xml'
-          mergeTestResults: true
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/log/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
