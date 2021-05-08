@@ -136,16 +136,13 @@ stages:
           echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
+          --reporters cli,junit \
           --reporter-junit-export report/regression_tests_report.xml
-          sleep 120s
           echo '#####################Run Validation Tests#####################'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
+          --reporters cli,junit \
           --reporter-junit-export report/validation_tests_report.xml
-          pwd
-          ls
-          cd report
-          ls
         displayName: Run Regression and Validation Tests
       - task: PublishTestResults@2
         displayName: Publish Regression and Validation Test Reports
