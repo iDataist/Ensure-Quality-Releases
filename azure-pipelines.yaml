@@ -176,7 +176,7 @@ stages:
                 targetPath: '/home/vmadmin20210509/azagent/_work/1/s/ui_test.log'
                 artifactName: 'drop-ui-test'
     - job: PerformanceTest
-    steps: 
+      steps: 
       - task: JMeterInstaller@0
         displayName: Install JMeter 5.4.1
         inputs:
