@@ -145,11 +145,11 @@ stages:
           --reporters cli,junit \
           --reporter-junit-export validation_tests_report.xml
         displayName: Run Regression and Validation Tests
-      - task: PublishTestResults@2
+      - task: PublishPipelineArtifact@1
         displayName: Publish Regression and Validation Test Reports
         inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/*.xml'
+          targetPath: '$(System.DefaultWorkingDirectory)/*.xml'
+          artifactName: 'drop-integration-test'
     - deployment: UITest
       environment:
         name:  'VM20210509'
