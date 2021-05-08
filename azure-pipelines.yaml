@@ -42,13 +42,13 @@ stages:
         -p $(sp-secret) \
         --tenant $(tenant-id)
         cd $(System.DefaultWorkingDirectory)/terraform
-        echo '#######Terraform Init########'
+        echo '#####################Terraform Init#####################'
         terraform init \
         -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
         -backend-config="container_name=$(tfBackendStorageContainerName)" \
         -backend-config="access_key=$(tf-backend-sa-access-key)" \
         -backend-config="key=$(tfBackendFileName)"
-        echo '#######Terraform Plan########'
+        echo '#####################Terraform Plan#####################'
         terraform plan -var-file=$(tfvarsFile) \
         -var="client_id=$(sp-id)" \
         -var="client_secret=$(sp-secret)" \
@@ -57,7 +57,7 @@ stages:
         -var="admin_username=$(vm-user)" \
         -var="admin_password=$(vm-password)" \
         -out="out.plan"
-        echo '#######Terraform Apply########'
+        echo '#####################Terraform Apply#####################'
         terraform apply out.plan
       displayName: 'Terraform Init, Plan and Apply'
   - job: StageArtifacts
@@ -129,14 +129,14 @@ stages:
         inputs:
           versionSpec: '12.x'
       - script: |
-          echo '#######Install Newman########'
+          echo '#####################Install Newman#####################'
           npm install newman
-          echo '#######Run Regression Tests########'
+          echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
           --reporter-junit-export report/regression_tests_report.xml
-          sleep 60s
-          echo '#######Run Validation Tests########'
+          sleep 120s
+          echo '#####################Run Validation Tests#####################'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
           --reporter-junit-export report/validation_tests_report.xml
