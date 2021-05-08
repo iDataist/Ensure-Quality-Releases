@@ -112,12 +112,14 @@ stages:
         deploy:
           steps:
           - script: |
-                sudo apt-get upgrade -y
-                sudo apt-get install python3-pip -y
-                sudo apt-get install unzip -y
-                sudo apt-get install -y chromium-browser
-                sudo apt-get install -y chromium-chromedriver
-                pip3 install selenium
+              sudo apt-get install software-properties-common -y
+              sudo apt-add-repository universe -y
+              sudo apt-get update -y
+              sudo apt-get install python3-pip -y
+              sudo apt-get install unzip -y
+              sudo apt-get install -y chromium-browser
+              sudo apt-get install -y chromium-chromedriver
+              pip3 install selenium
 - stage: Test
   jobs:
     - job: IntegrationTest
