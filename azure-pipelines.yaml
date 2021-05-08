@@ -36,6 +36,7 @@ stages:
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
     - script: |
+        pwd
         az login \
         --service-principal \
         -u $(sp-id) \
@@ -112,6 +113,7 @@ stages:
         deploy:
           steps:
           - script: |
+              pwd
               sudo apt-get install software-properties-common -y
               sudo apt-add-repository universe -y
               sudo apt-get update -y
@@ -120,11 +122,6 @@ stages:
               sudo apt-get install -y chromium-browser
               sudo apt-get install -y chromium-chromedriver
               pip3 install selenium
-              python3 -V
-              pip3 -V
-              /usr/bin/chromium-browser --version
-              /usr/bin/chromedriver --version
-              python3 -c "import selenium; print('Selenium Version:', selenium.__version__)"
 - stage: Test
   jobs:
     - job: IntegrationTest
@@ -134,6 +131,7 @@ stages:
         inputs:
           versionSpec: '12.x'
       - script: |
+          pwd
           echo '#######Install Newman########'
           npm install newman
           echo '#######Run Regression Tests########'
@@ -149,7 +147,7 @@ stages:
         displayName: Publish Regression and Validation Test Reports
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/*.xml'
+          testResultsFiles: '*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
@@ -159,7 +157,8 @@ stages:
           deploy:
             steps:
             - script: |
-                unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                python3 selenium/ui_tests.py > ui_test_logs.log
                 pwd
+                unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
+                ls
+                python3 selenium/ui_tests.py > ui_test_logs.log
               displayName: Run UI Tests
