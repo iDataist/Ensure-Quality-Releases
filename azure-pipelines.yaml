@@ -131,6 +131,7 @@ stages:
       - script: |
           echo '#####################Install Newman#####################'
           npm install newman
+          sudo mkdir report
           echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
