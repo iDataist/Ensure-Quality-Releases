@@ -41,7 +41,7 @@ stages:
         -u $(sp-id) \
         -p $(sp-secret) \
         --tenant $(tenant-id)
-        cd $(Pipeline.Workspace)/terraform
+        cd $(System.DefaultWorkingDirectory)/terraform
         echo '#######Terraform Init########'
         terraform init \
         -backend-config="storage_account_name=$(tfBackendStorageAccountName)" \
@@ -142,7 +142,7 @@ stages:
         displayName: Publish Regression and Validation Test Reports
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(Pipeline.Workspace)/integration_test_reports/*.xml'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
