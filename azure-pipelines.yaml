@@ -36,7 +36,6 @@ stages:
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
     - script: |
-        pwd
         az login \
         --service-principal \
         -u $(sp-id) \
@@ -61,7 +60,6 @@ stages:
         echo '#######Terraform Apply########'
         terraform apply out.plan
       displayName: 'Terraform Init, Plan and Apply'
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
   - job: StageArtifacts
     pool:
       vmImage: 'ubuntu-latest'
@@ -137,7 +135,7 @@ stages:
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
           --reporter-junit-export report/regression_tests_report.xml
-          sleep 30s
+          sleep 60s
           echo '#######Run Validation Tests########'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
@@ -157,15 +155,12 @@ stages:
           deploy:
             steps:
             - script: |
-                pwd
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                ls
                 python3 ui_tests.py > ui_test.log
               displayName: Run UI Tests
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
             - task: PublishTestResults@2
               displayName: Publish UI Test Logs
               inputs:
-                targetPath: '$(System.DefaultWorkingDirectory)/ui_test.log'
+                targetPath: '/home/vmadmin20210509/azagent/_work/1/s/ui_test.log'
                 artifactName: 'drop-ui-test'
   
