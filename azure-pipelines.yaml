@@ -61,6 +61,7 @@ stages:
         echo '#######Terraform Apply########'
         terraform apply out.plan
       displayName: 'Terraform Init, Plan and Apply'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
   - job: StageArtifacts
     pool:
       vmImage: 'ubuntu-latest'
@@ -113,7 +114,6 @@ stages:
         deploy:
           steps:
           - script: |
-              pwd
               sudo apt-get install software-properties-common -y
               sudo apt-add-repository universe -y
               sudo apt-get update -y
@@ -131,13 +131,13 @@ stages:
         inputs:
           versionSpec: '12.x'
       - script: |
-          pwd
           echo '#######Install Newman########'
           npm install newman
           echo '#######Run Regression Tests########'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
           --reporter-junit-export report/regression_tests_report.xml
+          sleep 30s
           echo '#######Run Validation Tests########'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
@@ -147,7 +147,7 @@ stages:
         displayName: Publish Regression and Validation Test Reports
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '*.xml'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/report/*.xml'
     - deployment: UITest
       environment:
         name:  'VM20210509'
@@ -160,5 +160,12 @@ stages:
                 pwd
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
                 ls
-                python3 selenium/ui_tests.py > ui_test_logs.log
+                python3 ui_tests.py > ui_test.log
               displayName: Run UI Tests
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+            - task: PublishTestResults@2
+              displayName: Publish UI Test Logs
+              inputs:
+                targetPath: '$(System.DefaultWorkingDirectory)/ui_test.log'
+                artifactName: 'drop-ui-test'
+  
