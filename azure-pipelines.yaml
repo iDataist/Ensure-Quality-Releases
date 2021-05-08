@@ -158,7 +158,7 @@ stages:
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
                 python3 ui_tests.py > ui_test.log
               displayName: Run UI Tests
-            - task: PublishTestResults@2
+            - task: PublishPipelineArtifact@1
               displayName: Publish UI Test Logs
               inputs:
                 targetPath: '/home/vmadmin20210509/azagent/_work/1/s/ui_test.log'
