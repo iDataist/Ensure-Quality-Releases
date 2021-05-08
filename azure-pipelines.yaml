@@ -158,8 +158,10 @@ stages:
       - task: PublishTestResults@2
         displayName: Publish Regression and Validation Test Reports as Test Results
         inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.DefaultWorkingDirectory)/log/*.xml'
+          testRunner: 'JUnit'
+          searchFolder: '$(System.DefaultWorkingDirectory)/log'
+          testResultsFiles: '*.xml'
+          mergeTestResults: true
     - deployment: UITest
       environment:
         name:  'VM20210509'
