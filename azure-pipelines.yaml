@@ -134,7 +134,7 @@ stages:
           sudo npm install -g newman-reporter-junitfull
           mkdir -p log/newman
           pwd
-          ls -la
+          ls
           echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
@@ -146,7 +146,7 @@ stages:
           -e automatedtesting/postman/validation_tests.postman_environment.json \
           --reporters cli,junit \
           --reporter-junit-export log/newman/validation_tests_report.xml \
-          ls -la $(System.DefaultWorkingDirectory)/log/newman
+          ls $(System.DefaultWorkingDirectory)/log/newman
         displayName: Run Regression and Validation Tests
       - task: PublishPipelineArtifact@1
         displayName: Publish Regression and Validation Test Reports as Artifacts
@@ -184,7 +184,7 @@ stages:
       - script: |
           mkdir -p log/jmeter
           pwd
-          ls -la
+          ls
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
           -Jresdir=automatedtesting/jmeter/endurance_test_result.csv \
@@ -195,6 +195,7 @@ stages:
           -Jresdir=automatedtesting/jmeter/stress_test_result.csv \
           -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
+          ls $(System.DefaultWorkingDirectory)/log/jmeter
         displayName: Run Endurance and Stress Tests
       - task: PublishBuildArtifacts@1
         inputs:
