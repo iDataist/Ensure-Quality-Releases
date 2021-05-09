@@ -151,6 +151,7 @@ stages:
           targetPath: '$(System.DefaultWorkingDirectory)/log/newman'
           artifactName: 'drop-integration-test'
     - deployment: UITest
+      displayName: UITest
       environment:
         name:  'VM20210509'
         resourceType: VirtualMachine
@@ -175,13 +176,17 @@ stages:
           jmeterVersion: '5.4.1'
       - script: |
           mkdir -p log/jmeter
+          touch log/jmeter/endurance_test_result.csv
+          touch log/jmeter/stress_test_result.csv
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
+          -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/endurance_test_result.csv \
           -e -f -o log/jmeter/endurance_test_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
+          -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/stress_test_result.csv \
           -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
