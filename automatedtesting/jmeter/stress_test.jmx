@@ -175,7 +175,7 @@
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">/Users/huiren/Ensuring-Quality-Releases/automatedtesting/jmeter/endurance_test_result.csv</stringProp>
+          <stringProp name="filename">/Users/huiren/Ensuring-Quality-Releases/automatedtesting/jmeter/stress_test_result.csv</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
