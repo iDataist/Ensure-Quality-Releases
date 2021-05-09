@@ -188,6 +188,7 @@ stages:
           -l log/jmeter/stress_test_result.csv \
           -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
+          pwd
           ls $(System.DefaultWorkingDirectory)/log/jmeter
         displayName: Run Endurance and Stress Tests
       - task: PublishBuildArtifacts@1
