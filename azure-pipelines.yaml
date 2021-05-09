@@ -189,6 +189,7 @@ stages:
           ls $(System.DefaultWorkingDirectory)/log/jmeter
         displayName: Run Endurance and Stress Tests
       - task: PublishBuildArtifacts@1
+        displayName: Publish Performance Test Logs
         inputs:
-          targetPath: '$(System.DefaultWorkingDirectory)/log/jmeter'
+          targetPath: '/home/vsts/work/1/s/log/jmeter'
           ArtifactName: 'drop-performance-test'
