@@ -95,5 +95,3 @@ az deployment group create \
 # ssh [ADMIN]@[PUBLIC-IP]
 # sudo adduser [USERNAME] sudo
 # wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w <YOUR WORKSPACE ID> -s <YOUR WORKSPACE PRIMARY KEY>
-
-
