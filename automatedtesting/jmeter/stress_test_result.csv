@@ -1,0 +1,8 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1620519862608,972,Get Books,200,OK,Stress Test 1-2,text,true,,940253,154,2,2,https://webapp20210509-appservice.azurewebsites.net/api/Books,507,0,334
+1620519863581,187,Get Book,200,OK,Stress Test 1-2,text,true,,5633,160,2,2,https://webapp20210509-appservice.azurewebsites.net/api/Books/?id=2,187,0,0
+1620519863769,282,Get Books,200,OK,Stress Test 1-2,text,true,,894943,154,2,2,https://webapp20210509-appservice.azurewebsites.net/api/Books,120,0,0
+1620519864051,130,Get Book,200,OK,Stress Test 1-2,text,true,,4579,160,2,2,https://webapp20210509-appservice.azurewebsites.net/api/Books/?id=3,128,0,0
+1620519864181,383,Get Books,200,OK,Stress Test 1-2,text,true,,927156,154,2,2,https://webapp20210509-appservice.azurewebsites.net/api/Books,141,0,0
+1620519864564,116,Get Book,200,OK,Stress Test 1-2,text,true,,4798,160,2,2,https://webapp20210509-appservice.azurewebsites.net/api/Books/?id=4,115,0,0
+1620519862608,2836,Get Books,200,OK,Stress Test 1-1,text,true,,924860,154,1,1,https://webapp20210509-appservice.azurewebsites.net/api/Books,449,0,254
