@@ -180,19 +180,17 @@ stages:
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
           -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/endurance_test_result.csv \
-          -e -f -o log/jmeter/endurance_test_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
           -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/stress_test_result.csv \
-          -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
           pwd
           ls $(System.DefaultWorkingDirectory)/log/jmeter
         displayName: Run Endurance and Stress Tests
-      - task: PublishBuildArtifacts@1
+      - task: PublishPipelineArtifact@1
         displayName: Publish Performance Test Logs
         inputs:
-          targetPath: '/home/vsts/work/1/s/log/jmeter'
+          targetPath: '$(System.DefaultWorkingDirectory)/log/jmeter'
           ArtifactName: 'drop-performance-test'
