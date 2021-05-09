@@ -103,7 +103,6 @@ stages:
               appType: webApp
               package: $(Pipeline.Workspace)/drop-api/$(Build.BuildId)-api.zip
   - deployment: DeployVM
-    displayName: Deploy VM
     environment:
       name: 'VM20210510'
       resourceType: VirtualMachine
