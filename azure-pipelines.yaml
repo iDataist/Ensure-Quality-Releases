@@ -1,6 +1,6 @@
 trigger:
   branches:
-    exclude:
+    include:
     - main
   paths:
     exclude:
@@ -10,10 +10,10 @@ trigger:
 
 name: DevOps Pipeline
 variables:
-  InfraProvisioningResoureGroupName: group20210509
-  tfBackendStorageAccountName: tfbackend20210509
-  tfBackendStorageContainerName: tf-backend-files-20210509
-  tfBackendFileName: tf-state-file-20210509
+  InfraProvisioningResoureGroupName: group20210510
+  tfBackendStorageAccountName: tfbackend20210510
+  tfBackendStorageContainerName: tf-backend-files-20210510
+  tfBackendFileName: tf-state-file-20210510
   tfvarsFile: dev.tfvars
   python.version: '3.7.6'
 stages:
@@ -25,13 +25,13 @@ stages:
     steps:
     - task: AzureKeyVault@1
       inputs:
-        azureSubscription: 'sp-20210509'
-        KeyVaultName: "secrets-kv-20210509"
+        azureSubscription: 'sp-20210510'
+        KeyVaultName: "secrets-kv-20210510"
         SecretsFilter: 'sp-id,sp-secret,tenant-id,subscription-id,tf-backend-sa-access-key,vm-user,vm-password'
       displayName: 'Get key vault secrets as pipeline variables'
     - task: AzureCLI@1
       inputs:
-        azureSubscription: 'sp-20210509'
+        azureSubscription: 'sp-20210510'
         scriptLocation: 'inlineScript'
         inlineScript: 'terraform version'
       displayName: "Terraform Version"
@@ -98,14 +98,14 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: 'sp-20210509'
-              appName: 'webapp20210509-AppService'
+              azureSubscription: 'sp-20210510'
+              appName: 'webapp20210510-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-api/$(Build.BuildId)-api.zip
   - deployment: DeployVM
     displayName: Deploy VM
     environment:
-      name: 'VM20210509'
+      name: 'VM20210510'
       resourceType: VirtualMachine
     strategy:
       runOnce:
@@ -153,7 +153,7 @@ stages:
     - deployment: UITest
       displayName: UITest
       environment:
-        name:  'VM20210509'
+        name:  'VM20210510'
         resourceType: VirtualMachine
       strategy:
         runOnce:
@@ -166,7 +166,7 @@ stages:
             - task: PublishPipelineArtifact@1
               displayName: Publish UI Test Logs
               inputs:
-                targetPath: '/home/vmadmin20210509/azagent/_work/1/s/ui_test.log'
+                targetPath: '/home/vmadmin20210510/azagent/_work/1/s/ui_test.log'
                 artifactName: 'drop-ui-test'
     - job: PerformanceTest
       steps: 
