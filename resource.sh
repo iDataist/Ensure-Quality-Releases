@@ -1,4 +1,4 @@
-uniqueid=20210510
+uniqueid=20210511
 resourcegroup="group$uniqueid"
 location='westus2'
 storageaccount="tfbackend$uniqueid" 
@@ -95,4 +95,4 @@ az deployment group create \
 # ssh [ADMIN]@[PUBLIC-IP]
 # sudo adduser [USERNAME] sudo
 # wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w <YOUR WORKSPACE ID> -s <YOUR WORKSPACE PRIMARY KEY>
-# sudo chmod 775 /home/vmadmin20210510/azagent/_work/1/s/ui_test.log
+# sudo chmod 775 /home/vmadmin20210511/azagent/_work/1/s/ui_test.log
