@@ -187,12 +187,12 @@ stages:
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
           -l log/jmeter/endurance_test_result.csv \
-          -e -f -o log/jmeter/endurance_test_html_report \
+          -e -f -o log/jmeter/endurance_test_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
           -l log/jmeter/stress_test_result.csv \
-          -e -f -o log/jmeter/stress_test_html_report \
+          -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
         displayName: Run Endurance and Stress Tests
       - task: PublishPipelineArtifact@1
