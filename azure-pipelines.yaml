@@ -168,8 +168,7 @@ stages:
             steps:
             - script: |
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                python3 ui_tests.py > ui_test.log
-                sudo chmod 775 ui_test.log
+                sudo python3 -u ui_tests.py 2>&1 | sudo tee -a ui_test.log
                 cat ui_test.log
               displayName: Run UI Tests
             - task: PublishPipelineArtifact@1
