@@ -151,8 +151,9 @@ stages:
           artifactName: 'drop-integration-test'
       - task: PublishTestResults@2
         displayName: Publish Regression and Validation Test Reports
+        condition: always()
         inputs:
-          testResultsFormat: 'JUnit'
+          testRunTitle: 'Regression and Validation Test Reports'
           testResultsFiles: '$(System.DefaultWorkingDirectory)/log/newman/*.xml'
     - deployment: UITest
       displayName: UITest
@@ -167,13 +168,13 @@ stages:
                 mkdir -p log/selenium
                 sudo chmod 664 log/selenium
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                sudo python3 -u ui_tests.py | sudo tee -a log/selenium/ui_test.log
-                cat ui_test.log
+                python3 ui_tests.py > log/selenium/ui_test.log
+                cat log/selenium/ui_test.log
               displayName: Run UI Tests
             - task: PublishPipelineArtifact@1
               displayName: Publish UI Test Logs
               inputs:
-                targetPath: '/home/vmadmin20210511/azagent/_work/1/s/ui_test.log'
+                targetPath: '/home/vmadmin20210511/azagent/_work/1/s/log/selenium/ui_test.log'
                 artifactName: 'drop-ui-test'
     - job: PerformanceTest
       steps: 
@@ -185,13 +186,13 @@ stages:
           mkdir -p log/jmeter
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
-          -l log/jmeter/endurance_test_result.csv \
-          -e -f -o log/jmeter/endurance_test_report \
+          -l automatedtesting/jmeter/endurance_test_result.csv \
+          -e -f -o automatedtesting/jmeter/endurance_test_html_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
-          -l log/jmeter/stress_test_result.csv \
-          -e -f -o log/jmeter/stress_test_report \
+          -l automatedtesting/jmeter/stress_test_result.csv \
+          -e -f -o automatedtesting/jmeter/stress_test_html_report \
           -j log/jmeter/stress_test.log
         displayName: Run Endurance and Stress Tests
       - task: PublishPipelineArtifact@1
