@@ -167,7 +167,7 @@ stages:
                 mkdir -p log/selenium
                 sudo chmod 664 log/selenium
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                sudo python3 -u ui_tests.py 2>&1 | sudo tee -a log/selenium/ui_test.log
+                sudo python3 -u ui_tests.py | sudo tee -a log/selenium/ui_test.log
                 cat ui_test.log
               displayName: Run UI Tests
             - task: PublishPipelineArtifact@1
