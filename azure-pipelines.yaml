@@ -176,22 +176,24 @@ stages:
                 targetPath: '/home/vmadmin20210510/azagent/_work/1/s/ui_test.log'
                 artifactName: 'drop-ui-test'
     - job: PerformanceTest
-      steps: 
-      - task: JMeterInstaller@0
-        displayName: Install JMeter 5.4.1
-        inputs:
-          jmeterVersion: '5.4.1'
+      steps:
       - script: |
+          echo '#####################Install Jmeter#####################'
+          sudo apt-get install openjdk-11-jre-headless -y
+          java -version
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.4.tgz -O jmeter.tgz
+          tar xzvf jmeter.tgz
+          apache-jmeter-5.4/bin/jmeter --version
           mkdir -p log/jmeter
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
-          -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/endurance_test_result.csv \
+          -e -f -o log/jmeter/endurance_test_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
-          -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/stress_test_result.csv \
+          -e -f -o log/jmeter/stress_test_report \
           -j log/jmeter/stress_test.log
         displayName: Run Endurance and Stress Tests
       - task: PublishPipelineArtifact@1
