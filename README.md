@@ -17,5 +17,5 @@ In this project, I created a disposable test environment and ran a variety of au
 ![](screenshots/alert_rule.png)
 ![](screenshots/alert_fired.png)
 ![](screenshots/alert_email.png)
-4. Ingest custom logs into Log Analytics.
+4. Ingest custom logs into Log Analytics and run queries.
 ![](screenshots/custom_log.png)
