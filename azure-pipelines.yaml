@@ -127,7 +127,7 @@ stages:
         displayName: Install Node v12.X
         inputs:
           versionSpec: '12.x'
-      - script: |
+      - bash: |
           echo '#####################Install Newman#####################'
           npm install newman
           sudo npm install -g newman-reporter-junitfull
@@ -165,16 +165,15 @@ stages:
           deploy:
             steps:
             - script: |
-                mkdir -p log/selenium
-                sudo chmod 664 log/selenium
+                sudo chmod 664 .
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
-                python3 ui_tests.py > log/selenium/ui_test.log
-                cat log/selenium/ui_test.log
+                python3 ui_tests.py > ui_test.log
+                cat ui_test.log
               displayName: Run UI Tests
             - task: PublishPipelineArtifact@1
               displayName: Publish UI Test Logs
               inputs:
-                targetPath: '/home/vmadmin20210511/azagent/_work/1/s/log/selenium/ui_test.log'
+                targetPath: '/home/vmadmin20210511/azagent/_work/1/s/ui_test.log'
                 artifactName: 'drop-ui-test'
     - job: PerformanceTest
       steps: 
