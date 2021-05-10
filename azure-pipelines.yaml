@@ -135,14 +135,14 @@ stages:
           echo '#####################Run Regression Tests#####################'
           newman run automatedtesting/postman/regression_tests.postman_collection.json \
           -e automatedtesting/postman/regression_tests.postman_environment.json \
-          --reporters cli,junit \
-          --reporter-junit-export log/newman/regression_tests_report.xml \
+          -r cli,junitfull \
+          --reporter-junitfull-export log/newman/regression_tests_report.xml \
           sleep 120s
           echo '#####################Run Validation Tests#####################'
           newman run automatedtesting/postman/validation_tests.postman_collection.json \
           -e automatedtesting/postman/validation_tests.postman_environment.json \
-          --reporters cli,junit \
-          --reporter-junit-export log/newman/validation_tests_report.xml \
+          -r cli,junitfull \
+          --reporter-junitfull-export log/newman/validation_tests_report.xml \
         displayName: Run Regression and Validation Tests
       - task: PublishPipelineArtifact@1
         displayName: Publish Regression and Validation Test Reports as Artifacts
@@ -185,13 +185,13 @@ stages:
           mkdir -p log/jmeter
           echo '#####################Run Endurance Tests#####################'
           jmeter -n -t automatedtesting/jmeter/endurance_test.jmx \
-          -l automatedtesting/jmeter/endurance_test_result.csv \
-          -e -f -o automatedtesting/jmeter/endurance_test_html_report \
+          -l log/jmeter/endurance_test_result.csv \
+          -e -f -o log/jmeter/endurance_test_html_report \
           -j log/jmeter/endurance_test.log
           echo '#####################Run Stress Tests#####################'
           jmeter -n -t automatedtesting/jmeter/stress_test.jmx \
-          -l automatedtesting/jmeter/stress_test_result.csv \
-          -e -f -o automatedtesting/jmeter/stress_test_html_report \
+          -l log/jmeter/stress_test_result.csv \
+          -e -f -o log/jmeter/stress_test_html_report \
           -j log/jmeter/stress_test.log
         displayName: Run Endurance and Stress Tests
       - task: PublishPipelineArtifact@1
