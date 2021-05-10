@@ -153,7 +153,7 @@ stages:
         displayName: Publish Regression and Validation Test Reports
         condition: always()
         inputs:
-          testRunTitle: 'Regression and Validation Test Reports'
+          testResultsFormat: 'JUnit'
           testResultsFiles: '$(System.DefaultWorkingDirectory)/log/newman/*.xml'
     - deployment: UITest
       displayName: UITest
