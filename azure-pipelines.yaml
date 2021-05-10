@@ -155,6 +155,8 @@ stages:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '$(System.DefaultWorkingDirectory)/log/newman/*.xml'
+          mergeTestResults: true
+          testRunTitle: 'Regression and Validation Test Reports'
     - deployment: UITest
       displayName: UITest
       environment:
