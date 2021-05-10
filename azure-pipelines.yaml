@@ -127,7 +127,7 @@ stages:
         displayName: Install Node v12.X
         inputs:
           versionSpec: '12.x'
-      - bash: |
+      - script: |
           echo '#####################Install Newman#####################'
           npm install newman
           sudo npm install -g newman-reporter-junitfull
@@ -165,10 +165,10 @@ stages:
           deploy:
             steps:
             - script: |
-                sudo chmod 664 .
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
                 python3 ui_tests.py > ui_test.log
                 cat ui_test.log
+                sudo chmod 664 .
               displayName: Run UI Tests
             - task: PublishPipelineArtifact@1
               displayName: Publish UI Test Logs
