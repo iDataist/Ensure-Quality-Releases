@@ -149,6 +149,11 @@ stages:
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)/log/newman'
           artifactName: 'drop-integration-test'
+      - task: PublishTestResults@2
+        displayName: Publish Regression and Validation Test Reports
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)/log/newman/*.xml'
     - deployment: UITest
       displayName: UITest
       environment:
@@ -161,6 +166,7 @@ stages:
             - script: |
                 unzip -o $(Pipeline.Workspace)/drop-selenium/$(Build.BuildId)-selenium.zip -d .
                 python3 ui_tests.py > ui_test.log
+                cat ui_test.log
               displayName: Run UI Tests
             - task: PublishPipelineArtifact@1
               displayName: Publish UI Test Logs
@@ -185,8 +191,6 @@ stages:
           -Jresdir=automatedtesting/jmeter/id.csv \
           -l log/jmeter/stress_test_result.csv \
           -j log/jmeter/stress_test.log
-          pwd
-          ls $(System.DefaultWorkingDirectory)/log/jmeter
         displayName: Run Endurance and Stress Tests
       - task: PublishPipelineArtifact@1
         displayName: Publish Performance Test Logs
