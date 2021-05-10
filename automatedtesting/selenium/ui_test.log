@@ -1,0 +1,11 @@
+Starting the browser...
+#########Test login#########
+Login succeeded at 2021-05-09 20:37:16
+#########Test adding products to cart#########
+Added:  Sauce Labs Bike Light, Sauce Labs Bolt T-Shirt, Sauce Labs Onesie, Test.allTheThings() T-Shirt (Red), Sauce Labs Backpack, Sauce Labs Fleece Jacket
+The cart has:  Sauce Labs Bike Light, Sauce Labs Bolt T-Shirt, Sauce Labs Onesie, Test.allTheThings() T-Shirt (Red), Sauce Labs Backpack, Sauce Labs Fleece Jacket
+Adding products succeeded at 2021-05-09 20:37:18
+#########Test removing products from the cart#########
+Removing 6 products from cart
+Removed:  Sauce Labs Bike Light, Sauce Labs Bolt T-Shirt, Sauce Labs Onesie, Test.allTheThings() T-Shirt (Red), Sauce Labs Backpack, Sauce Labs Fleece Jacket
+Removing products succeeded at 2021-05-09 20:37:19
